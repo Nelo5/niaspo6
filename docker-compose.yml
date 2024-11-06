@@ -1,0 +1,36 @@
+services:
+  php:
+    container_name: php
+    build: ./images/php
+    volumes:
+      - ./www:/var/www/html
+    depends_on:
+      - mysql
+
+  apache:  # Changed from nginx
+    build: ./images/apache # Choose an appropriate Apache image version
+    container_name: apache
+    volumes:
+      - ./www:/var/www/html # Apache's default document root is /var/www/html
+    ports:
+      - "80:80"
+    depends_on:
+      - php
+      - mysql
+  mysql:
+    container_name: mysql
+    image: mysql
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin
+    ports:
+      - 1500:80
+    environment:
+      - PMA_HOST=mysql
+    depends_on:
+      - mysql
